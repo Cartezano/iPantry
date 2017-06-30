@@ -41,7 +41,7 @@ public class ProductoActivity extends AppCompatActivity {
         cadena.put("cantidadProducto",cantidad);
         cadena.put("fechaVencimientoProducto",fechaVencimiento);
         System.out.println(codigo+", "+nombre+", "+marca+", "+cantidad+", "+fechaVencimiento);
-        long resp = 0;
+        long resp;
         resp = bd.insert("productos",null,cadena);
         bd.close();
         if (resp >= 1)
