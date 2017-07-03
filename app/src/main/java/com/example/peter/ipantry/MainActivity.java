@@ -17,4 +17,9 @@ public class MainActivity extends AppCompatActivity {
         Intent i = new Intent(this, ProductoActivity.class );
         startActivity(i);
     }
+
+    public void listar_producto(View view) {
+        Intent i = new Intent(this, ListarProductoActivity.class);
+        startActivity(i);
+    }
 }

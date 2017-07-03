@@ -1,5 +1,6 @@
 package com.example.peter.ipantry;
 
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -21,6 +22,7 @@ public class ListarProductoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_listarproducto);
 
         productos = new ArrayList<String>();
+        listarProducto();
         adaptador = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,productos);
         lv = (ListView)findViewById(R.id.lvProductos);
         lv.setAdapter(adaptador);
@@ -28,12 +30,31 @@ public class ListarProductoActivity extends AppCompatActivity {
 
     //TODO: obtener tabla y mostrar
 
-    public void listarProducto(View v) {
+    public void listarProducto() {
         AdminSQLiteOpenHelper admin = new AdminSQLiteOpenHelper(this,
                 "administracion", null, 1);
         SQLiteDatabase bd = admin.getWritableDatabase();
-        bd.rawQuery("select * from 'productos'",null);
+        Cursor c = bd.rawQuery("select * from 'productos'",null);
+
+        if (c != null ) {
+            if  (c.moveToFirst()) {
+                do {
+                    String nombre = c.getString(c.getColumnIndex("nombreProducto"));
+                    String marca = c.getString(c.getColumnIndex("marcaProducto"));
+                    String cantidad = c.getString(c.getColumnIndex("cantidadProducto"));
+                    String fecha = c.getString(c.getColumnIndex("fechaVencimientoProducto"));
+                    productos.add("Nombre: " + nombre + "\nMarca: " + marca + "\nCantidad: "+ cantidad + "\nFecha Vencimiento: " + fecha);
+                }while (c.moveToNext());
+            }
+        }
+
+        /*resultSet.moveToFirst();
+        while (resultSet.moveToLast()){
+            int i=0;
+            productos.add(resultSet.getString(i));
+            i++;
+        }*/
         //productos.add(et1.getText().toString());
-        adaptador.notifyDataSetChanged();
+        //adaptador.notifyDataSetChanged();
     }
 }
