@@ -132,7 +132,8 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
                         idUsuario = c.getString(c.getColumnIndex(UsuarioEntry.IDUSUARIO));
                         System.out.println("el id del usuario seleccionado es ... ----------->" + idUsuario + "<-------------");
                         //TODO: que no agregue cada vez que se abre la app
-                        wea(new ProductoUsuario("7801620002916",idUsuario,"3","27.10.2017"));
+                        //wea(new ProductoUsuario("7801620002916",idUsuario,"3","27.10.2017"));
+                        putProductoUsuario(bd);
                     } while (c.moveToNext());
                 }
             }
@@ -172,6 +173,16 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
         }
         db.close();
         return new Producto(codigoProducto,nombreProducto,marcaProducto,imagenProducto);
+    }
+
+    private void putProductoUsuario(SQLiteDatabase db){
+        Cursor c = db.rawQuery("SELECT * FROM productoUsuario",null);
+        if (c != null){
+            if (!c.moveToFirst()){
+                System.out.println("creando entrada para listar");
+                wea(new ProductoUsuario("7801620002916",idUsuario,"3","27.10.2017"));
+            }
+        }
     }
 
 
