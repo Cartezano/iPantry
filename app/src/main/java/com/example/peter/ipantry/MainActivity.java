@@ -11,6 +11,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        System.out.println("iniciando SQLite Helper");
+
+        AdminSQLiteOpenHelper admin = new AdminSQLiteOpenHelper(this);
+        admin.setIdUsuario();
     }
 
     public void agregar_producto(View view) {

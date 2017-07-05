@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.peter.ipantry">
 
     <application
@@ -18,6 +19,10 @@
         </activity>
         <activity android:name=".ProductoActivity"></activity>
         <activity android:name=".ListarProductoActivity"></activity>
+        <activity
+            android:name="com.journeyapps.barcodescanner.CaptureActivity"
+            android:screenOrientation="portrait"
+            tools:replace="screenOrientation" />
     </application>
 
 </manifest>

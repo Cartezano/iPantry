@@ -4,11 +4,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import java.util.ArrayList;
+
+import data.iPantryContract.*;
 
 public class ListarProductoActivity extends AppCompatActivity {
 
@@ -28,33 +28,40 @@ public class ListarProductoActivity extends AppCompatActivity {
         lv.setAdapter(adaptador);
     }
 
-    //TODO: obtener tabla y mostrar
-
     public void listarProducto() {
-        AdminSQLiteOpenHelper admin = new AdminSQLiteOpenHelper(this,
-                "administracion", null, 1);
-        SQLiteDatabase bd = admin.getWritableDatabase();
-        Cursor c = bd.rawQuery("select * from 'productos'",null);
+        AdminSQLiteOpenHelper admin = new AdminSQLiteOpenHelper(this);
+        SQLiteDatabase bd = admin.getReadableDatabase();
+
+        Cursor c = bd.rawQuery(
+                "SELECT " + ProductoEntry.TABLE_NAME + "." + ProductoEntry.CODIGO +"," +
+                        ProductoEntry.TABLE_NAME + "." + ProductoEntry.NOMBRE +"," +
+                        ProductoEntry.TABLE_NAME + "." + ProductoEntry.MARCA + "," +
+                        ProductoEntry.TABLE_NAME + "." + ProductoEntry.IMAGEN + "," +
+                        ProductoUsuarioEntry.TABLE_NAME + "." + ProductoUsuarioEntry.CODIGO + "," +
+                        ProductoUsuarioEntry.TABLE_NAME + "." + ProductoUsuarioEntry.CANTIDAD + "," +
+                        ProductoUsuarioEntry.TABLE_NAME + "." + ProductoUsuarioEntry.FECHA_VENCIMENTO +
+                " FROM " + ProductoEntry.TABLE_NAME +
+                " INNER JOIN " + ProductoUsuarioEntry.TABLE_NAME +
+                        " ON " + ProductoEntry.TABLE_NAME + "." + ProductoEntry.CODIGO + " = " +
+                        ProductoUsuarioEntry.TABLE_NAME + "." + ProductoUsuarioEntry.CODIGO
+                ,null);
 
         if (c != null ) {
+            System.out.println("c != null");
             if  (c.moveToFirst()) {
+                System.out.println("c movetofirst c = "+c.getCount());
                 do {
-                    String nombre = c.getString(c.getColumnIndex("nombreProducto"));
-                    String marca = c.getString(c.getColumnIndex("marcaProducto"));
-                    String cantidad = c.getString(c.getColumnIndex("cantidadProducto"));
-                    String fecha = c.getString(c.getColumnIndex("fechaVencimientoProducto"));
-                    productos.add("Nombre: " + nombre + "\nMarca: " + marca + "\nCantidad: "+ cantidad + "\nFecha Vencimiento: " + fecha);
+                    String nombre = c.getString(c.getColumnIndex(ProductoEntry.NOMBRE));
+                    String marca = c.getString(c.getColumnIndex(ProductoEntry.MARCA));
+                    String cantidad = c.getString(c.getColumnIndex(ProductoUsuarioEntry.CANTIDAD));
+                    String fecha = c.getString(c.getColumnIndex(ProductoUsuarioEntry.FECHA_VENCIMENTO));
+                    productos.add("Nombre: " + nombre +
+                            "\nMarca: " + marca +
+                            "\nCantidad: "+ cantidad +
+                            "\nFecha Vencimiento: " + fecha);
                 }while (c.moveToNext());
             }
         }
-
-        /*resultSet.moveToFirst();
-        while (resultSet.moveToLast()){
-            int i=0;
-            productos.add(resultSet.getString(i));
-            i++;
-        }*/
-        //productos.add(et1.getText().toString());
-        //adaptador.notifyDataSetChanged();
+        bd.close();
     }
 }
