@@ -13,17 +13,16 @@ import data.iPantryContract.*;
 public class ListarProductoActivity extends AppCompatActivity {
 
     private ArrayList<String> productos;
-    private ArrayAdapter<String> adaptador;
-    private ListView lv;
+    protected ListView lv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_listarproducto);
 
-        productos = new ArrayList<String>();
+        productos = new ArrayList<>();
         listarProducto();
-        adaptador = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,productos);
+        ArrayAdapter<String> adaptador = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, productos);
         lv = (ListView)findViewById(R.id.lvProductos);
         lv.setAdapter(adaptador);
     }
@@ -43,7 +42,8 @@ public class ListarProductoActivity extends AppCompatActivity {
                 " FROM " + ProductoEntry.TABLE_NAME +
                 " INNER JOIN " + ProductoUsuarioEntry.TABLE_NAME +
                         " ON " + ProductoEntry.TABLE_NAME + "." + ProductoEntry.CODIGO + " = " +
-                        ProductoUsuarioEntry.TABLE_NAME + "." + ProductoUsuarioEntry.CODIGO
+                        ProductoUsuarioEntry.TABLE_NAME + "." + ProductoUsuarioEntry.CODIGO +
+                        " ORDER BY '" + ProductoUsuarioEntry.FECHA_VENCIMENTO + "' ASC"
                 ,null);
 
         if (c != null ) {

@@ -18,7 +18,7 @@
         app:layout_constraintRight_toLeftOf="@+id/button"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintVertical_bias="0.821"
+        app:layout_constraintVertical_bias="0.896"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="8dp" />
 
@@ -26,19 +26,17 @@
         android:id="@+id/txtCodigo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
         android:ems="10"
         android:hint="Pulsa para escanear"
         android:inputType="number"
         android:onClick="scan"
         android:text=""
         android:visibility="invisible"
-        app:layout_constraintHorizontal_bias="0.503"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
         tools:ignore="HardcodedText,MissingConstraints"
-        tools:layout_editor_absoluteY="16dp" />
+        tools:layout_editor_absoluteY="464dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        tools:layout_editor_absoluteX="85dp" />
 
     <EditText
         android:id="@+id/txtNombre"
@@ -54,9 +52,9 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/txtMarca" />
+        android:layout_marginTop="37dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp" />
 
     <EditText
         android:id="@+id/txtMarca"
@@ -65,14 +63,15 @@
         android:ems="10"
         android:hint="Marca Producto"
         android:inputType="textPersonName"
-        tools:ignore="HardcodedText,LabelFor"
+        tools:ignore="HardcodedText,LabelFor,MissingConstraints"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/txtNombre"
         android:layout_marginLeft="8dp"
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginRight="8dp"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintHorizontal_bias="0.503"
-        android:layout_marginBottom="39dp"
-        app:layout_constraintBottom_toTopOf="@+id/txtCantidad" />
+        app:layout_constraintRight_toRightOf="parent" />
 
     <EditText
         android:id="@+id/txtCantidad"
@@ -81,30 +80,16 @@
         android:ems="10"
         android:hint="Cantidad"
         android:inputType="number"
-        tools:ignore="HardcodedText,LabelFor"
+        tools:ignore="HardcodedText,LabelFor,MissingConstraints"
         android:layout_marginLeft="8dp"
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginRight="8dp"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintHorizontal_bias="0.503"
-        android:layout_marginBottom="38dp"
-        app:layout_constraintBottom_toTopOf="@+id/txtFechaVencimiento" />
-
-    <EditText
-        android:id="@+id/txtFechaVencimiento"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="Fecha Vencimiento"
-        android:inputType="date"
-        tools:ignore="HardcodedText,LabelFor"
-        android:layout_marginRight="8dp"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginLeft="8dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintHorizontal_bias="0.503"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="187dp" />
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/txtMarca" />
 
     <Button
         android:id="@+id/button"
@@ -116,10 +101,27 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toRightOf="@+id/btnVolverMain"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintVertical_bias="0.821"
+        app:layout_constraintVertical_bias="0.896"
         android:layout_marginStart="8dp"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="8dp"
         tools:ignore="HardcodedText" />
+
+    <DatePicker
+        android:id="@+id/dpFechaVencimiento"
+        style="@android:style/Widget.DatePicker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtCantidad"
+        app:layout_constraintVertical_bias="0.0"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

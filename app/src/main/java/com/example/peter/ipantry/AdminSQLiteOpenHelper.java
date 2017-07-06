@@ -109,7 +109,7 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
         values.put(ProductoUsuarioEntry.CODIGO, "7801620002916");
         values.put(ProductoUsuarioEntry.IDUSUARIO, idUsuario);
         values.put(ProductoUsuarioEntry.CANTIDAD, "3");
-        values.put(ProductoUsuarioEntry.FECHA_VENCIMENTO, "27.10.2017");
+        values.put(ProductoUsuarioEntry.FECHA_VENCIMENTO, "2017-10-27");
 
         // Insertar...
         db.insert(ProductoUsuarioEntry.TABLE_NAME, null, values);
@@ -148,26 +148,19 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
         String imagenProducto = "";
         SQLiteDatabase db = getReadableDatabase();
         System.out.println("Ejecutando consulta");
-        //Cursor k = db.rawQuery("SELECT * FROM productos",null);
         Cursor c = db.rawQuery("SELECT * FROM productos WHERE codigoProducto LIKE "+ codigoProducto +"",null);
         System.out.println("Consulta = SELECT * FROM productos WHERE codigoProducto LIKE "+ codigoProducto +"");
-        //System.out.println("Cantidad filas en K = "+k.getCount());
-
 
         if (c != null) {
             System.out.println("Numero de filas en c = "+c.getCount());
-            //System.out.println(k.moveToFirst());
-            //System.out.println("Fila 1 = "+k.getString(k.getColumnIndex("codigoProducto")));
             if (c.moveToFirst()) {
                 System.out.println("c se movio al primero");
-
                 do {
                     System.out.println("Haciendo :X");
                     nombreProducto = c.getString(c.getColumnIndex(ProductoEntry.NOMBRE));
                     marcaProducto = c.getString(c.getColumnIndex(ProductoEntry.MARCA));
                     imagenProducto = c.getString(c.getColumnIndex(ProductoEntry.IMAGEN));
                     System.out.println("Nombre: "+nombreProducto+"Marca: "+marcaProducto);
-                    //producto(codigoProducto,nombreProducto,marcaProducto,imagenProducto);
                 } while (c.moveToNext());
             }
         }
@@ -180,10 +173,19 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
         if (c != null){
             if (!c.moveToFirst()){
                 System.out.println("creando entrada para listar");
-                wea(new ProductoUsuario("7801620002916",idUsuario,"3","27.10.2017"));
+                wea(new ProductoUsuario("7801620002916",idUsuario,"3","2017-10-27"));
             }
         }
     }
 
-
+    public Boolean existeProducto(SQLiteDatabase db, String codigo, String fechaVencimiento){
+        Cursor c = db.rawQuery("SELECT "+ProductoUsuarioEntry.CODIGO+", "+ProductoUsuarioEntry.FECHA_VENCIMENTO+
+                " FROM "+ProductoUsuarioEntry.TABLE_NAME+
+                " WHERE "+ProductoUsuarioEntry.CODIGO+" = '"+codigo+
+                "' AND "+ProductoUsuarioEntry.FECHA_VENCIMENTO+" = '"+fechaVencimiento+"'",null);
+        if (c != null && c.moveToFirst()) {
+            return true;
+        }
+        return false;
+    }
 }
