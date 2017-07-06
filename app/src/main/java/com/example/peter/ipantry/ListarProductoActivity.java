@@ -60,6 +60,7 @@ public class ListarProductoActivity extends AppCompatActivity {
                             "\nCantidad: "+ cantidad +
                             "\nFecha Vencimiento: " + fecha);
                 }while (c.moveToNext());
+                c.close();
             }
         }
         bd.close();
