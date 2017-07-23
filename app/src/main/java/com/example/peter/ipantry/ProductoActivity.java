@@ -16,7 +16,7 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
 import data.Producto;
-import data.iPantryContract.*;
+import data.ProductoUsuario;
 
 public class ProductoActivity extends AppCompatActivity {
 
@@ -60,37 +60,47 @@ public class ProductoActivity extends AppCompatActivity {
 
     public void agregar(View v) {
         AdminSQLiteOpenHelper admin = new AdminSQLiteOpenHelper(this);
-        ContentValues cadena = new ContentValues();
+        //ContentValues cadena = new ContentValues();
         SQLiteDatabase bd = admin.getWritableDatabase();
         String codigo = txtCodigo.getText().toString();
         String cantidad = txtCantidad.getText().toString();
         String fechaVencimiento = getFecha();
-        cadena.put(ProductoUsuarioEntry.CODIGO, codigo);
-        cadena.put(ProductoUsuarioEntry.IDUSUARIO, AdminSQLiteOpenHelper.idUsuario);
-        cadena.put(ProductoUsuarioEntry.CANTIDAD, cantidad);
-        cadena.put(ProductoUsuarioEntry.FECHA_VENCIMENTO, fechaVencimiento);
-        //System.out.println(codigo + ", " + AdminSQLiteOpenHelper.idUsuario + ", " + cantidad + ", " + fechaVencimiento);
-        long resp;
+        String idUsuario = AdminSQLiteOpenHelper.idUsuario;
+        ProductoUsuario pu = new ProductoUsuario(codigo, idUsuario, fechaVencimiento, cantidad);
+
         if (!cantidad.isEmpty()) {
             int i = Integer.parseInt(cantidad);
             if (i != 0) {
-                //TODO: implementar agregar producto existente sume en vez de crear uno nuevo
-                //if (admin.existeProducto(bd,codigo,fechaVencimiento)) {
-                    //resp = bd.update(Stri)
-                //}else{
-                    resp = bd.insert(ProductoUsuarioEntry.TABLE_NAME, null, cadena);
+                if (admin.existeProducto(bd,pu,codigo,fechaVencimiento)){
+
+                    // TODO:Agregar cantidad a producto existente
+                    int intCant = Integer.parseInt(cantidad.trim());
+                    int resp = admin.agregarCantidadProducto(bd,pu,intCant);
+
+                    bd.close();
+
+                    if (resp < 1){
+                        Toast.makeText(this, "No se pudo agregar cantidad deseada", Toast.LENGTH_SHORT).show();
+                    }else {
+                        Toast.makeText(this, "Producto existente! se ha agregado la cantidad al Stock", Toast.LENGTH_SHORT).show();
+                        limpiar();
+                    }
+
+                }else {
+                    long resp = admin.insertarProducto(bd, pu);
+
                     bd.close();
                     if (resp >= 0) {
                         Toast.makeText(this, "Producto agregado correctamente", Toast.LENGTH_SHORT).show();
                         limpiar();
-                    }else if (resp == -1) {
+                    } else if (resp == -1) {
                         Toast.makeText(this, "No se pudo ingresar el producto :(", Toast.LENGTH_SHORT).show();
                     }
-                //}
-            }else{
+                }
+            } else {
                 Toast.makeText(this, "Error!: Cantidad no puede ser 0", Toast.LENGTH_SHORT).show();
             }
-        }else{
+        } else {
             Toast.makeText(this, "Error!: Cantidad no puede estar vacia", Toast.LENGTH_SHORT).show();
         }
     }
@@ -119,22 +129,22 @@ public class ProductoActivity extends AppCompatActivity {
         finish();
     }
 
-    private String getFecha(){
+    private String getFecha() {
         String fecha;
         int day = dpFechaVencimiento.getDayOfMonth();
         int month = dpFechaVencimiento.getMonth();
         int year = dpFechaVencimiento.getYear();
-        fecha = year + "-" + month + "-" +day;
+        fecha = year + "-" + month + "-" + day;
         return fecha;
     }
 
-    private void setConfDatePick(){
+    private void setConfDatePick() {
         //final Calendar c = Calendar.getInstance();
         dpFechaVencimiento.setMinDate(System.currentTimeMillis() - 1000);
         //dpFechaVencimiento.setMaxDate(System.currentTimeMillis());
     }
 
-    private void limpiar(){
+    private void limpiar() {
         txtCodigo.setText("");
         txtNombre.setText("");
         txtMarca.setText("");

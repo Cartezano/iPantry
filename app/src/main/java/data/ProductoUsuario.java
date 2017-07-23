@@ -20,6 +20,8 @@ public class ProductoUsuario {
         this.cantidadProducto = cantidadProducto;
     }
 
+    // Getter
+
     public String getIdProductoUsuario() {
         return idProductoUsuario;
     }
@@ -38,5 +40,15 @@ public class ProductoUsuario {
 
     public String getCantidadProducto() {
         return cantidadProducto;
+    }
+
+    // Setter
+
+    public void setIdProductoUsuario(String idProductoUsuario) {
+        this.idProductoUsuario = idProductoUsuario;
+    }
+
+    public void setCantidadProducto(String cantidadProducto) {
+        this.cantidadProducto = cantidadProducto;
     }
 }

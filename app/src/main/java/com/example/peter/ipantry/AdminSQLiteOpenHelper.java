@@ -3,8 +3,13 @@ package com.example.peter.ipantry;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.MatrixCursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+
+import java.util.ArrayList;
 
 import data.Producto;
 import data.Usuario;
@@ -66,17 +71,22 @@ class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
 
     }
 
+    /**********************************************************************************************/
+    /*-------------------------------Ingresar aqui productos nuevos-------------------------------*/
+    /**********************************************************************************************/
+
     private void baseData(SQLiteDatabase db) {
         // Productos
         System.out.println("Ingresando datos");
-        dataProductos(db, new Producto("7801620002916", "Jugo Light Tuttifrutilla", "Watts", "watts_tutti_light.jpg"));
+        //----------------------------("----Codigo---", "Producto + nombre + cantidad", "Marca", "foto %marca_%nombre_corto%.jpg
+        dataProductos(db, new Producto("7801620002916", "Jugo Light Tuttifrutilla 1.5L", "Watts", "watts_tutti_light1500.jpg"));
         dataProductos(db, new Producto("7802225427197", "Rocklets Mani", "Arcor", "arcor_rocklts_mani.jpg"));
         dataProductos(db, new Producto("7802225587198", "Golpe", "Arcor", "arcor_golpe.jpg"));
         dataProductos(db, new Producto("7790040613706", "Bon o Bon", "Arcor", "arcor_bonobon.jpg"));
         dataProductos(db, new Producto("7802200009028", "Los Tres Negritos", "Ambrosoli", "ambrosoli_tresnegritos.jpg"));
-        //dataProductos(db, new Producto("asd","asd","asd","asd"));
-        //dataProductos(db, new Producto("asd","asd","asd","asd"));
-        //dataProductos(db, new Producto("asd","asd","asd","asd"));
+        dataProductos(db, new Producto("7801620010133", "Bebida Kem 250ml","CCU","ccu_kem250.jpg"));
+        dataProductos(db, new Producto("7802810006592", "Juego Manzana 200Ml", "Watts", "watts_manzana200.jpg"));
+        //dataProductos(db, new Producto("asd", "asd", "asd", "asd"));
 
         // Usuarios
         dataUsuarios(db, new Usuario("admin", "abc123", "Administrador", "iPantry", "jose.marin23@inacapmail.cl"));
@@ -177,16 +187,133 @@ class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
             }
     }
 
-    //TODO Implentar esto
-    public Boolean existeProducto(SQLiteDatabase db, String codigo, String fechaVencimiento){
+    //TODO: Agregar ID usuario
+    public Boolean existeProducto(SQLiteDatabase db, ProductoUsuario pu, String codigo, String fechaVencimiento){
+
+        String table = ProductoUsuarioEntry.TABLE_NAME;
+        String where = ProductoUsuarioEntry.CODIGO+" = '"+codigo+"' AND "+ProductoUsuarioEntry.FECHA_VENCIMENTO+" = '"+fechaVencimiento+"'";
+
         Cursor c = db.rawQuery("SELECT "+ProductoUsuarioEntry.CODIGO+", "+ProductoUsuarioEntry.FECHA_VENCIMENTO+
+                ", "+ProductoUsuarioEntry.ID+", "+ProductoUsuarioEntry.CANTIDAD+
                 " FROM "+ProductoUsuarioEntry.TABLE_NAME+
                 " WHERE "+ProductoUsuarioEntry.CODIGO+" = '"+codigo+
                 "' AND "+ProductoUsuarioEntry.FECHA_VENCIMENTO+" = '"+fechaVencimiento+"'",null);
+
+        // TODO: Reemplazar con query
+        //db.query(false, table, null, where, null, null, null, null, null);
+
         if (c != null && c.moveToFirst()) {
+
+            pu.setIdProductoUsuario(c.getString(c.getColumnIndex(ProductoUsuarioEntry.ID)));
+            pu.setCantidadProducto(c.getString(c.getColumnIndex(ProductoUsuarioEntry.CANTIDAD)));
+
             c.close();
             return true;
+        }else{
+            return false;
         }
-        return false;
     }
+
+    public long insertarProducto(SQLiteDatabase db, ProductoUsuario pu){
+        ContentValues cadena = new ContentValues();
+
+        cadena.put(ProductoUsuarioEntry.ID, pu.getIdProductoUsuario());
+        cadena.put(ProductoUsuarioEntry.CODIGO, pu.getCodigoProducto());
+        cadena.put(ProductoUsuarioEntry.IDUSUARIO, pu.getCodigoUsuario());
+        cadena.put(ProductoUsuarioEntry.FECHA_VENCIMENTO, pu.getFechaVencimientoProducto());
+        cadena.put(ProductoUsuarioEntry.CANTIDAD, pu.getCantidadProducto());
+
+        return db.insert(ProductoUsuarioEntry.TABLE_NAME, null, cadena);
+    }
+
+    int agregarCantidadProducto(SQLiteDatabase db, ProductoUsuario pu, int cantidad){
+        ContentValues cadena = new ContentValues();
+        int newVal = cantidad + Integer.parseInt(pu.getCantidadProducto());
+        cadena.put(ProductoUsuarioEntry.CANTIDAD, newVal);
+
+        System.out.println("Cantidad total: "+newVal);
+
+        String table = ProductoUsuarioEntry.TABLE_NAME;
+        String where = ProductoUsuarioEntry.ID + "='" + pu.getIdProductoUsuario()+"'";
+
+        return db.update(table, cadena, where, null);
+    }
+
+    // TODO: Implementar idUsuario
+    int descontarCantidadProducto(SQLiteDatabase db, String codigo/*,String idUsuario*/){
+
+        ContentValues cadena = new ContentValues();
+
+        int cantidad = 0;
+
+        String table = ProductoUsuarioEntry.TABLE_NAME;
+        String where = ProductoUsuarioEntry.CODIGO + "='" + codigo + "'";
+        String[] select = new String[]
+                {ProductoUsuarioEntry.CANTIDAD};
+
+        Cursor c = db.query(false, table, select, where, null, null, null, null, null);
+
+        if (c != null && c.moveToFirst()) {
+
+            cantidad = Integer.parseInt(c.getString(c.getColumnIndex(ProductoUsuarioEntry.CANTIDAD)));
+            if (cantidad <= 0){
+                return -1;
+            }else {
+                cantidad--;
+                cadena.put(ProductoUsuarioEntry.CANTIDAD, cantidad);
+                c.close();
+                return db.update(table, cadena, where, null);
+            }
+        }else{
+            return -1;
+        }
+    }
+
+    // Funcion para DatabaseManager
+
+    public ArrayList<Cursor> getData(String Query){
+        //get writable database
+        SQLiteDatabase sqlDB = this.getWritableDatabase();
+        String[] columns = new String[] { "message" };
+        //an array list of cursor to save two cursors one has results from the query
+        //other cursor stores error message if any errors are triggered
+        ArrayList<Cursor> alc = new ArrayList<Cursor>(2);
+        MatrixCursor Cursor2= new MatrixCursor(columns);
+        alc.add(null);
+        alc.add(null);
+
+        try{
+            String maxQuery = Query ;
+            //execute the query results will be save in Cursor c
+            Cursor c = sqlDB.rawQuery(maxQuery, null);
+
+            //add value to cursor2
+            Cursor2.addRow(new Object[] { "Success" });
+
+            alc.set(1,Cursor2);
+            if (null != c && c.getCount() > 0) {
+
+                alc.set(0,c);
+                c.moveToFirst();
+
+                return alc ;
+            }
+            return alc;
+        } catch(SQLException sqlEx){
+            Log.d("printing exception", sqlEx.getMessage());
+            //if any exceptions are triggered save the error message to cursor an return the arraylist
+            Cursor2.addRow(new Object[] { ""+sqlEx.getMessage() });
+            alc.set(1,Cursor2);
+            return alc;
+        } catch(Exception ex){
+            Log.d("printing exception", ex.getMessage());
+
+            //if any exceptions are triggered save the error message to cursor an return the arraylist
+            Cursor2.addRow(new Object[] { ""+ex.getMessage() });
+            alc.set(1,Cursor2);
+            return alc;
+        }
+    }
+
 }
+
